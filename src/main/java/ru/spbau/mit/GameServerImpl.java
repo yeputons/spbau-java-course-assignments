@@ -7,14 +7,16 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
-
+/**
+ * GameServerImpl assumes that Connection is thread-safe
+ */
 public class GameServerImpl implements GameServer {
     final private Game game;
     final private AtomicInteger lastId = new AtomicInteger();
     final private ConcurrentMap<String, Connection> connections = new ConcurrentHashMap<>();
 
     public GameServerImpl(String gameClassName, Properties properties) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Class gameClass = ClassLoader.getSystemClassLoader().loadClass(gameClassName);
+        Class<Game> gameClass = (Class<Game>) ClassLoader.getSystemClassLoader().loadClass(gameClassName);
         game = (Game)gameClass.getConstructor(GameServer.class).newInstance(this);
         for (Map.Entry<Object, Object> prop : properties.entrySet()) {
             String key = (String) prop.getKey();

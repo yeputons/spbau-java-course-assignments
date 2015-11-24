@@ -21,7 +21,7 @@ public class QuizGame implements Game {
         public void reloadFrom(String dictionaryFilename) throws FileNotFoundException {
             try (Scanner s = new Scanner(new FileReader(dictionaryFilename))) {
                 Deque<Entry> newDictionary = new ArrayDeque<>();
-                for (; ; ) {
+                while (true) {
                     String line;
                     try {
                         line = s.nextLine();
@@ -51,12 +51,15 @@ public class QuizGame implements Game {
     }
 
     private static class RoundHandler {
+        // I want static class and explicit field instead of implicit access because
+        // there are some final duplicated fields in RoundHandler which should not be
+        // mixed with what's defined in QuizGame
         final private QuizGame game;
         final private Dictionary.Entry currentEntry;
         final private int delayUntilNextLetter;
         final private int maxLettersToOpen;
         final private Timer timer = new Timer();
-        int openedLetters = 0;
+        private int openedLetters = 0;
         private boolean stopped = false;
 
         private RoundHandler(QuizGame game, Dictionary.Entry currentEntry, int delayUntilNextLetter, int maxLettersToOpen) {
@@ -70,6 +73,14 @@ public class QuizGame implements Game {
             this.maxLettersToOpen = maxLettersToOpen;
             this.game.server.broadcast("New round started: " + currentEntry.question);
             scheduleOpenNextLetter();
+        }
+
+        public void onPlayerConnected(String id) {
+            synchronized (this) {
+                if (!stopped) {
+                    game.server.sendTo(id, "New round started: " + currentEntry.question);
+                }
+            }
         }
 
         private void scheduleOpenNextLetter() {
@@ -117,21 +128,14 @@ public class QuizGame implements Game {
                 }
             }
         }
-
-        public void onPlayerConnected(String id) {
-            synchronized (this) {
-                if (!stopped) {
-                    game.server.sendTo(id, "New round started: " + currentEntry.question);
-                }
-            }
-        }
     }
 
-    private Dictionary dictionary = new Dictionary();
+    final private Dictionary dictionary = new Dictionary();
+    final private GameServer server;
+
     private int delayUntilNextLetter = 0;
     private int maxLettersToOpen = 0;
 
-    final private GameServer server;
     private RoundHandler roundHandler = null;
 
     public QuizGame(GameServer server) {
@@ -162,20 +166,24 @@ public class QuizGame implements Game {
     @Override
     public void onPlayerSentMsg(String id, String msg) {
         synchronized (this) {
-            if (msg == "!start") {
-                if (roundHandler == null) {
-                    roundHandler = new RoundHandler(this, dictionary.nextEntry(), delayUntilNextLetter, maxLettersToOpen);
-                }
-            } else if (msg == "!stop") {
-                if (roundHandler != null) {
-                    roundHandler.stop();
-                    roundHandler = null;
-                    server.broadcast("Game has been stopped by " + id);
-                }
-            } else {
-                if (roundHandler != null) {
-                    roundHandler.makeGuess(id, msg);
-                }
+            switch (msg) {
+                case "!start":
+                    if (roundHandler == null) {
+                        roundHandler = new RoundHandler(this, dictionary.nextEntry(), delayUntilNextLetter, maxLettersToOpen);
+                    }
+                    break;
+                case "!stop":
+                    if (roundHandler != null) {
+                        roundHandler.stop();
+                        roundHandler = null;
+                        server.broadcast("Game has been stopped by " + id);
+                    }
+                    break;
+                default:
+                    if (roundHandler != null) {
+                        roundHandler.makeGuess(id, msg);
+                    }
+                    break;
             }
         }
     }
