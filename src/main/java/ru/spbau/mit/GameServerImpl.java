@@ -2,10 +2,7 @@ package ru.spbau.mit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
 
 /**
  * GameServerImpl assumes that Connection is thread-safe
@@ -13,7 +10,7 @@ import java.util.function.BiConsumer;
 public class GameServerImpl implements GameServer {
     final private Game game;
     final private AtomicInteger lastId = new AtomicInteger();
-    final private ConcurrentMap<String, Connection> connections = new ConcurrentHashMap<>();
+    final private Map<String, Connection> connections = new HashMap<>();
 
     public GameServerImpl(String gameClassName, Properties properties) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Class<Game> gameClass = (Class<Game>) ClassLoader.getSystemClassLoader().loadClass(gameClassName);
@@ -34,7 +31,9 @@ public class GameServerImpl implements GameServer {
     @Override
     public void accept(final Connection connection) {
         final String id = Integer.toString(lastId.getAndIncrement());
-        connections.put(id, connection);
+        synchronized (connections) {
+            connections.put(id, connection);
+        }
         connection.send(id);
         game.onPlayerConnected(id);
         new Thread(new Runnable() {
@@ -60,16 +59,17 @@ public class GameServerImpl implements GameServer {
 
     @Override
     public void broadcast(final String message) {
-        connections.forEach(new BiConsumer<String, Connection>() {
-            @Override
-            public void accept(String id, Connection connection) {
-                connection.send(message);
+        synchronized (connections) {
+            for (Map.Entry<String, Connection> entry : connections.entrySet()) {
+                entry.getValue().send(message);
             }
-        });
+        }
     }
 
     @Override
     public void sendTo(String id, String message) {
-        connections.get(id).send(message);
+        synchronized (connections) {
+            connections.get(id).send(message);
+        }
     }
 }
