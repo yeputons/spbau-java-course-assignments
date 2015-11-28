@@ -145,43 +145,37 @@ public class QuizGame implements Game {
     }
 
     @Override
-    public void onPlayerConnected(String id) {
-        synchronized (this) {
-            if (roundHandler != null) {
-                roundHandler.onPlayerConnected(id);
-            }
+    public synchronized void onPlayerConnected(String id) {
+        if (roundHandler != null) {
+            roundHandler.onPlayerConnected(id);
         }
     }
 
     @Override
-    public void onPlayerSentMsg(String id, String msg) {
-        synchronized (this) {
-            switch (msg) {
-                case "!start":
-                    if (roundHandler == null) {
-                        roundHandler = new RoundHandler(this, dictionary.nextEntry(), delayUntilNextLetter, maxLettersToOpen);
-                    }
-                    break;
-                case "!stop":
-                    if (roundHandler != null) {
-                        roundHandler.stop();
-                        roundHandler = null;
-                        server.broadcast("Game has been stopped by " + id);
-                    }
-                    break;
-                default:
-                    if (roundHandler != null) {
-                        roundHandler.makeGuess(id, msg);
-                    }
-                    break;
-            }
+    public synchronized void onPlayerSentMsg(String id, String msg) {
+        switch (msg) {
+            case "!start":
+                if (roundHandler == null) {
+                    roundHandler = new RoundHandler(this, dictionary.nextEntry(), delayUntilNextLetter, maxLettersToOpen);
+                }
+                break;
+            case "!stop":
+                if (roundHandler != null) {
+                    roundHandler.stop();
+                    roundHandler = null;
+                    server.broadcast("Game has been stopped by " + id);
+                }
+                break;
+            default:
+                if (roundHandler != null) {
+                    roundHandler.makeGuess(id, msg);
+                }
+                break;
         }
     }
 
-    private void restartRound() {
-        synchronized (this) {
-            assert roundHandler != null;
-            roundHandler = new RoundHandler(this, dictionary.nextEntry(), delayUntilNextLetter, maxLettersToOpen);
-        }
+    private synchronized void restartRound() {
+        assert roundHandler != null;
+        roundHandler = new RoundHandler(this, dictionary.nextEntry(), delayUntilNextLetter, maxLettersToOpen);
     }
 }
