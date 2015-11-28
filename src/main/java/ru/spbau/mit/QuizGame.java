@@ -21,14 +21,8 @@ public class QuizGame implements Game {
         public void reloadFrom(String dictionaryFilename) throws FileNotFoundException {
             try (Scanner s = new Scanner(new FileReader(dictionaryFilename))) {
                 Deque<Entry> newDictionary = new ArrayDeque<>();
-                while (true) {
-                    String line;
-                    try {
-                        line = s.nextLine();
-                    } catch (NoSuchElementException e) {
-                        break;
-                    }
-                    String[] data = line.split(";");
+                while (s.hasNextLine()) {
+                    String[] data = s.nextLine().split(";");
                     String answer = data[1];
                     String question = String.format("%s (%d letters)", data[0], data[1].length());
                     newDictionary.add(new Entry(question, answer));
