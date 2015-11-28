@@ -44,8 +44,7 @@ public class GameServerImpl implements GameServer {
                     try {
                         msg = connection.receive(10);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        break;
+                        throw new RuntimeException("Unexpected interruption", e);
                     }
                     if (msg == null) {
                         Thread.yield();
