@@ -69,11 +69,9 @@ public class QuizGame implements Game {
             scheduleOpenNextLetter();
         }
 
-        public void onPlayerConnected(String id) {
-            synchronized (this) {
-                if (!stopped) {
-                    game.server.sendTo(id, "New round started: " + currentEntry.question);
-                }
+        public synchronized void onPlayerConnected(String id) {
+            if (!stopped) {
+                game.server.sendTo(id, "New round started: " + currentEntry.question);
             }
         }
 
@@ -86,44 +84,38 @@ public class QuizGame implements Game {
             }, delayUntilNextLetter);
         }
 
-        private void openNextLetter() {
-            synchronized (this) {
-                if (stopped) {
-                    return;
-                }
-                openedLetters++;
-                if (openedLetters <= maxLettersToOpen) {
-                    game.server.broadcast("Current prefix is " + currentEntry.answer.substring(0, openedLetters));
-                    scheduleOpenNextLetter();
-                } else {
-                    game.server.broadcast("Nobody guessed, the word was " + currentEntry.answer);
-                    stop();
-                    game.restartRound();
-                }
+        private synchronized void openNextLetter() {
+            if (stopped) {
+                return;
+            }
+            openedLetters++;
+            if (openedLetters <= maxLettersToOpen) {
+                game.server.broadcast("Current prefix is " + currentEntry.answer.substring(0, openedLetters));
+                scheduleOpenNextLetter();
+            } else {
+                game.server.broadcast("Nobody guessed, the word was " + currentEntry.answer);
+                stop();
+                game.restartRound();
             }
         }
 
-        public void makeGuess(String id, String msg) {
-            synchronized (this) {
-                if (stopped) {
-                    return;
-                }
-                if (msg.equals(currentEntry.answer)) {
-                    game.server.broadcast("The winner is " + id);
-                    stop();
-                    game.restartRound();
-                } else {
-                    game.server.sendTo(id, "Wrong try");
-                }
+        public synchronized void makeGuess(String id, String msg) {
+            if (stopped) {
+                return;
+            }
+            if (msg.equals(currentEntry.answer)) {
+                game.server.broadcast("The winner is " + id);
+                stop();
+                game.restartRound();
+            } else {
+                game.server.sendTo(id, "Wrong try");
             }
         }
 
-        public void stop() {
-            synchronized (this) {
-                if (!stopped) {
-                    stopped = true;
-                    timer.cancel();
-                }
+        public synchronized void stop() {
+            if (!stopped) {
+                stopped = true;
+                timer.cancel();
             }
         }
     }
