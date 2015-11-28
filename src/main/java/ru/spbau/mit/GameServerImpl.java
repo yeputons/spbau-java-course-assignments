@@ -19,10 +19,16 @@ public class GameServerImpl implements GameServer {
             String key = (String) prop.getKey();
             String setterName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
             String value = (String) prop.getValue();
+
+            Integer valueInt = null;
             try {
-                int valueInt = Integer.parseInt(value);
-                gameClass.getMethod(setterName, int.class).invoke(game, valueInt);
+                valueInt = Integer.parseInt(value);
             } catch (NumberFormatException e) {
+            }
+
+            if (valueInt != null) {
+                gameClass.getMethod(setterName, int.class).invoke(game, valueInt);
+            } else {
                 gameClass.getMethod(setterName, String.class).invoke(game, value);
             }
         }
