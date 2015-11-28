@@ -65,8 +65,8 @@ public class GameServerImpl implements GameServer {
     @Override
     public void broadcast(final String message) {
         synchronized (connections) {
-            for (Map.Entry<String, Connection> entry : connections.entrySet()) {
-                entry.getValue().send(message);
+            for (Connection connection : connections.values()) {
+                connection.send(message);
             }
         }
     }
