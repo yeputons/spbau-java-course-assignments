@@ -81,22 +81,26 @@ public class QuizGame implements Game {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    synchronized (RoundHandler.this) {
-                        if (stopped) {
-                            return;
-                        }
-                        openedLetters++;
-                        if (openedLetters <= maxLettersToOpen) {
-                            game.server.broadcast("Current prefix is " + currentEntry.answer.substring(0, openedLetters));
-                            scheduleOpenNextLetter();
-                        } else {
-                            game.server.broadcast("Nobody guessed, the word was " + currentEntry.answer);
-                            stop();
-                            game.restartRound();
-                        }
-                    }
+                    openNextLetter();
                 }
             }, delayUntilNextLetter);
+        }
+
+        private void openNextLetter() {
+            synchronized (this) {
+                if (stopped) {
+                    return;
+                }
+                openedLetters++;
+                if (openedLetters <= maxLettersToOpen) {
+                    game.server.broadcast("Current prefix is " + currentEntry.answer.substring(0, openedLetters));
+                    scheduleOpenNextLetter();
+                } else {
+                    game.server.broadcast("Nobody guessed, the word was " + currentEntry.answer);
+                    stop();
+                    game.restartRound();
+                }
+            }
         }
 
         public void makeGuess(String id, String msg) {
