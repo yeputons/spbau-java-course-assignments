@@ -4,9 +4,9 @@ import java.util.*;
 
 
 public class SumTwoNumbersGame implements Game {
-    final public static int MAX_VALUE = 10000;
-    final private GameServer server;
-    final private Random random = new Random();
+    public static final int MAX_VALUE = 10000;
+    private final GameServer server;
+    private final Random random = new Random();
     private volatile int a, b;
 
     public SumTwoNumbersGame(GameServer server) {

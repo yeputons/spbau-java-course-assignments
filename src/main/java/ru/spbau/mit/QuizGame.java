@@ -16,7 +16,7 @@ public class QuizGame implements Game {
             }
         }
 
-        final private Deque<Entry> dictionary = new ArrayDeque<>();
+        private final Deque<Entry> dictionary = new ArrayDeque<>();
 
         public void reloadFrom(String dictionaryFilename) throws FileNotFoundException {
             try (Scanner s = new Scanner(new FileReader(dictionaryFilename))) {
@@ -54,11 +54,11 @@ public class QuizGame implements Game {
         // I want static class and explicit field instead of implicit access because
         // there are some final duplicated fields in RoundHandler which should not be
         // mixed with what's defined in QuizGame
-        final private QuizGame game;
-        final private Dictionary.Entry currentEntry;
-        final private int delayUntilNextLetter;
-        final private int maxLettersToOpen;
-        final private Timer timer = new Timer();
+        private final QuizGame game;
+        private final Dictionary.Entry currentEntry;
+        private final int delayUntilNextLetter;
+        private final int maxLettersToOpen;
+        private final Timer timer = new Timer();
         private int openedLetters = 0;
         private boolean stopped = false;
 
@@ -130,8 +130,8 @@ public class QuizGame implements Game {
         }
     }
 
-    final private Dictionary dictionary = new Dictionary();
-    final private GameServer server;
+    private final Dictionary dictionary = new Dictionary();
+    private final GameServer server;
 
     private int delayUntilNextLetter = 0;
     private int maxLettersToOpen = 0;

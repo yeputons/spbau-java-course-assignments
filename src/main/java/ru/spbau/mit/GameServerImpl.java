@@ -8,9 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * GameServerImpl assumes that Connection is thread-safe
  */
 public class GameServerImpl implements GameServer {
-    final private Game game;
-    final private AtomicInteger lastId = new AtomicInteger();
-    final private Map<String, Connection> connections = new HashMap<>();
+    private final Game game;
+    private final AtomicInteger lastId = new AtomicInteger();
+    private final Map<String, Connection> connections = new HashMap<>();
 
     public GameServerImpl(String gameClassName, Properties properties) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Class<Game> gameClass = (Class<Game>) ClassLoader.getSystemClassLoader().loadClass(gameClassName);
