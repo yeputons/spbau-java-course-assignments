@@ -132,15 +132,15 @@ public class QuizGame implements Game {
         this.server = server;
     }
 
-    public void setDelayUntilNextLetter(int delayUntilNextLetter) {
+    public synchronized void setDelayUntilNextLetter(int delayUntilNextLetter) {
         this.delayUntilNextLetter = delayUntilNextLetter;
     }
 
-    public void setMaxLettersToOpen(int maxLettersToOpen) {
+    public synchronized void setMaxLettersToOpen(int maxLettersToOpen) {
         this.maxLettersToOpen = maxLettersToOpen;
     }
 
-    public void setDictionaryFilename(String dictionaryFilename) throws FileNotFoundException {
+    public synchronized void setDictionaryFilename(String dictionaryFilename) throws FileNotFoundException {
         dictionary.reloadFrom(dictionaryFilename);
     }
 
