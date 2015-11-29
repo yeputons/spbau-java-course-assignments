@@ -44,34 +44,25 @@ public class QuizGame implements Game {
         }
     }
 
-    private static class RoundHandler {
-        // I want static class and explicit field instead of implicit access because
-        // there are some final duplicated fields in RoundHandler which should not be
-        // mixed with what's defined in QuizGame
-        private final QuizGame game;
+    private class RoundHandler {
         private final Dictionary.Entry currentEntry;
-        private final int delayUntilNextLetter;
-        private final int maxLettersToOpen;
         private final Timer timer = new Timer();
         private int openedLetters = 0;
         private boolean stopped = false;
 
-        private RoundHandler(QuizGame game, Dictionary.Entry currentEntry, int delayUntilNextLetter, int maxLettersToOpen) {
+        private RoundHandler(Dictionary.Entry currentEntry) {
             if (delayUntilNextLetter <= 0 || maxLettersToOpen < 0) {
-                throw new IllegalArgumentException();
+                throw new IllegalStateException("delayUntilNextLetter or maxLettersToOpen is invalid");
             }
 
-            this.game = game;
             this.currentEntry = currentEntry;
-            this.delayUntilNextLetter = delayUntilNextLetter;
-            this.maxLettersToOpen = maxLettersToOpen;
-            this.game.server.broadcast("New round started: " + currentEntry.question);
+            server.broadcast("New round started: " + currentEntry.question);
             scheduleOpenNextLetter();
         }
 
         public synchronized void onPlayerConnected(String id) {
             if (!stopped) {
-                game.server.sendTo(id, "New round started: " + currentEntry.question);
+                server.sendTo(id, "New round started: " + currentEntry.question);
             }
         }
 
@@ -90,12 +81,12 @@ public class QuizGame implements Game {
             }
             openedLetters++;
             if (openedLetters <= maxLettersToOpen) {
-                game.server.broadcast("Current prefix is " + currentEntry.answer.substring(0, openedLetters));
+                server.broadcast("Current prefix is " + currentEntry.answer.substring(0, openedLetters));
                 scheduleOpenNextLetter();
             } else {
-                game.server.broadcast("Nobody guessed, the word was " + currentEntry.answer);
+                server.broadcast("Nobody guessed, the word was " + currentEntry.answer);
                 stop();
-                game.restartRound();
+                restartRound();
             }
         }
 
@@ -104,11 +95,11 @@ public class QuizGame implements Game {
                 return;
             }
             if (msg.equals(currentEntry.answer)) {
-                game.server.broadcast("The winner is " + id);
+                server.broadcast("The winner is " + id);
                 stop();
-                game.restartRound();
+                restartRound();
             } else {
-                game.server.sendTo(id, "Wrong try");
+                server.sendTo(id, "Wrong try");
             }
         }
 
@@ -123,6 +114,8 @@ public class QuizGame implements Game {
     private final Dictionary dictionary = new Dictionary();
     private final GameServer server;
 
+    // These variables are supposed to change only once: right after QuizGame initialization.
+    // If modified afterwards during an active game, strange effects can happen with a currently active round.
     private int delayUntilNextLetter = 0;
     private int maxLettersToOpen = 0;
 
@@ -156,7 +149,7 @@ public class QuizGame implements Game {
         switch (msg) {
             case "!start":
                 if (roundHandler == null) {
-                    roundHandler = new RoundHandler(this, dictionary.nextEntry(), delayUntilNextLetter, maxLettersToOpen);
+                    roundHandler = new RoundHandler(dictionary.nextEntry());
                 }
                 break;
             case "!stop":
@@ -176,6 +169,6 @@ public class QuizGame implements Game {
 
     private synchronized void restartRound() {
         assert roundHandler != null;
-        roundHandler = new RoundHandler(this, dictionary.nextEntry(), delayUntilNextLetter, maxLettersToOpen);
+        roundHandler = new RoundHandler(dictionary.nextEntry());
     }
 }
