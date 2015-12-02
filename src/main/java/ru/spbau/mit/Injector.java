@@ -46,20 +46,20 @@ public class Injector {
         String[] depImpl = new String[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
             Class<?> parameter = parameters[i];
-            Class<?> dependency = null;
+            String dependency = null;
             for (String otherClassName : existingClasses) {
                 Class otherClass = Class.forName(otherClassName);
                 if (parameter.isAssignableFrom(otherClass)) {
                     if (dependency != null) {
                         throw new AmbiguousImplementationException();
                     }
-                    dependency = otherClass;
+                    dependency = otherClassName;
                 }
             }
             if (dependency == null) {
                 throw new ImplementationNotFoundException();
             }
-            depImpl[i] = dependency.getCanonicalName();
+            depImpl[i] = dependency;
         }
         return depImpl;
     }
