@@ -44,11 +44,7 @@ public class Injector {
         public final String[] dependencies;
 
         private ClassDescription(Class<?> klass) throws AmbiguousImplementationException, ImplementationNotFoundException, ClassNotFoundException {
-            Constructor<?>[] ctors = klass.getConstructors();
-            if (ctors.length != 1) {
-                throw new IllegalArgumentException("Exactly one public constructor should be available");
-            }
-            constructor = ctors[0];
+            constructor = klass.getConstructors()[0];
 
             Class<?>[] parameters = constructor.getParameterTypes();
             dependencies = new String[parameters.length];
