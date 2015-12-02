@@ -28,44 +28,41 @@ public class Injector {
             return result;
         }
         currentlyCreating.add(name);
-        ClassDescription klass = new ClassDescription(Class.forName(name));
-        Object[] arguments = new Object[klass.dependencies.length];
-        for (int i = 0; i < klass.dependencies.length; i++) {
-            arguments[i] = _resolve(klass.dependencies[i]);
+
+        Constructor<?> constructor = Class.forName(name).getConstructors()[0];
+        String[] depImpl = findDependencyImplementations(constructor);
+        Object[] arguments = new Object[depImpl.length];
+        for (int i = 0; i < depImpl.length; i++) {
+            arguments[i] = _resolve(depImpl[i]);
         }
-        result = klass.constructor.newInstance(arguments);
+        result = constructor.newInstance(arguments);
         alreadyCreated.put(name, result);
+
         currentlyCreating.remove(name);
         return result;
     }
 
-    private class ClassDescription {
-        public final Constructor<?> constructor;
-        public final String[] dependencies;
-
-        private ClassDescription(Class<?> klass) throws AmbiguousImplementationException, ImplementationNotFoundException, ClassNotFoundException {
-            constructor = klass.getConstructors()[0];
-
-            Class<?>[] parameters = constructor.getParameterTypes();
-            dependencies = new String[parameters.length];
-            for (int i = 0; i < parameters.length; i++) {
-                Class<?> parameter = parameters[i];
-                Class<?> dependency = null;
-                for (String otherClassName : existingClasses) {
-                    Class otherClass = Class.forName(otherClassName);
-                    if (parameter.isAssignableFrom(otherClass)) {
-                        if (dependency != null) {
-                            throw new AmbiguousImplementationException();
-                        }
-                        dependency = otherClass;
+    private String[] findDependencyImplementations(Constructor<?> constructor) throws AmbiguousImplementationException, ImplementationNotFoundException, ClassNotFoundException {
+        Class<?>[] parameters = constructor.getParameterTypes();
+        String[] depImpl = new String[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            Class<?> parameter = parameters[i];
+            Class<?> dependency = null;
+            for (String otherClassName : existingClasses) {
+                Class otherClass = Class.forName(otherClassName);
+                if (parameter.isAssignableFrom(otherClass)) {
+                    if (dependency != null) {
+                        throw new AmbiguousImplementationException();
                     }
+                    dependency = otherClass;
                 }
-                if (dependency == null) {
-                    throw new ImplementationNotFoundException();
-                }
-                dependencies[i] = dependency.getCanonicalName();
             }
+            if (dependency == null) {
+                throw new ImplementationNotFoundException();
+            }
+            depImpl[i] = dependency.getCanonicalName();
         }
+        return depImpl;
     }
 
     /**
