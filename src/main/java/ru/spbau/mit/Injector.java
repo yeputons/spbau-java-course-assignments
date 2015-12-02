@@ -4,15 +4,15 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 
 public class Injector {
-    private final Map<String, Class> classes;
+    private final Map<String, Class<?>> classes;
     private final Map<String, ClassDescription> descriptions;
     private final Map<String, Exception> descriptionErrors;
 
-    public Injector(Map<String, Class> classes) {
+    public Injector(Map<String, Class<?>> classes) {
         this.classes = classes;
         descriptions = new HashMap<>();
         descriptionErrors = new HashMap<>();
-        for (Class klass : classes.values()) {
+        for (Class<?> klass : classes.values()) {
             String name = klass.getCanonicalName();
             try {
                 descriptions.put(name, new ClassDescription(klass));
@@ -59,24 +59,24 @@ public class Injector {
     }
 
     private class ClassDescription {
-        public final Class klass;
-        public final Constructor constructor;
+        public final Class<?> klass;
+        public final Constructor<?> constructor;
         public final String[] dependencies;
 
-        private ClassDescription(Class klass) throws AmbiguousImplementationException, ImplementationNotFoundException {
+        private ClassDescription(Class<?> klass) throws AmbiguousImplementationException, ImplementationNotFoundException {
             this.klass = klass;
-            Constructor[] ctors = klass.getConstructors();
+            Constructor<?>[] ctors = klass.getConstructors();
             if (ctors.length != 1) {
                 throw new IllegalArgumentException("Exactly one public constructor should be available");
             }
             constructor = ctors[0];
 
-            Class[] parameters = constructor.getParameterTypes();
+            Class<?>[] parameters = constructor.getParameterTypes();
             dependencies = new String[parameters.length];
             for (int i = 0; i < parameters.length; i++) {
-                Class parameter = parameters[i];
-                Class dependency = null;
-                for (Class otherClass : classes.values()) {
+                Class<?> parameter = parameters[i];
+                Class<?> dependency = null;
+                for (Class<?> otherClass : classes.values()) {
                     if (parameter.isAssignableFrom(otherClass)) {
                         if (dependency != null) {
                             throw new AmbiguousImplementationException();
@@ -97,13 +97,13 @@ public class Injector {
      * `implementationClassNames` for concrete dependencies.
      */
     public static Object initialize(String rootClassName, List<String> implementationClassNames) throws Exception {
-        Map<String, Class> classes = new HashMap<>();
-        Class rootClass = Class.forName(rootClassName);
+        Map<String, Class<?>> classes = new HashMap<>();
+        Class<?> rootClass = Class.forName(rootClassName);
         rootClassName = rootClass.getCanonicalName();
         classes.put(rootClassName, rootClass);
 
         for (String name : implementationClassNames) {
-            Class klass = Class.forName(name);
+            Class<?> klass = Class.forName(name);
             if (classes.containsKey(klass.getCanonicalName())) {
                 throw new IllegalArgumentException("Class " + klass.getCanonicalName() + " occurs twice as an argument");
             }
