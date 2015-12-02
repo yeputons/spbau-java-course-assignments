@@ -53,6 +53,7 @@ public class Injector {
             arguments[i] = _resolve(klass.dependencies[i]);
         }
         result = klass.constructor.newInstance(arguments);
+        alreadyCreated.put(name, result);
         currentlyCreating.remove(name);
         return result;
     }

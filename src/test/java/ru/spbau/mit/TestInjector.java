@@ -39,4 +39,15 @@ public class TestInjector {
         ClassWithOneInterfaceDependency instance = (ClassWithOneInterfaceDependency) object;
         assertTrue(instance.dependency instanceof InterfaceImpl);
     }
+
+    @Test
+    public void injectorShouldInitializeClassWithTwoClassDependencies()
+            throws Exception {
+        Object object = Injector.initialize(
+                "ru.spbau.mit.testClasses.ClassWithTwoClassDependencies",
+                Collections.singletonList("ru.spbau.mit.testClasses.ClassWithoutDependencies"));
+        assertTrue(object instanceof ClassWithTwoClassDependencies);
+        ClassWithTwoClassDependencies instance = (ClassWithTwoClassDependencies) object;
+        assertTrue(instance.a == instance.b);
+    }
 }
