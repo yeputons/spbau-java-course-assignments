@@ -30,12 +30,11 @@ public class Injector {
         currentlyCreating.add(name);
 
         Constructor<?> constructor = Class.forName(name).getConstructors()[0];
-        String[] depImpl = findDependencyImplementations(constructor);
-        Object[] arguments = new Object[depImpl.length];
-        for (int i = 0; i < depImpl.length; i++) {
-            arguments[i] = _resolve(depImpl[i]);
+        ArrayList<Object> arguments = new ArrayList<>();
+        for (String depImpl : findDependencyImplementations(constructor)) {
+            arguments.add(_resolve(depImpl));
         }
-        result = constructor.newInstance(arguments);
+        result = constructor.newInstance(arguments.toArray());
         alreadyCreated.put(name, result);
 
         currentlyCreating.remove(name);
