@@ -3,10 +3,8 @@ package ru.spbau.mit;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.util.*;
 
 public class SerializableStringSetTest {
 
@@ -54,6 +52,33 @@ public class SerializableStringSetTest {
         };
 
         ((StreamSerializable) stringSet).serialize(outputStream);
+    }
+
+    @Test
+    public void testIteratorIteratesInLexicographicalOrder() {
+        StringSet actual = instance();
+
+        assertTrue(actual.add("abc"));
+        assertTrue(actual.add("aac"));
+        assertTrue(actual.add("a"));
+        assertTrue(actual.add("bac"));
+        assertTrue(actual.add("ababc"));
+        assertTrue(actual.add(""));
+
+        List<String> expected = new ArrayList<>();
+        expected.add("");
+        expected.add("a");
+        expected.add("aac");
+        expected.add("ababc");
+        expected.add("abc");
+        expected.add("bac");
+
+        Iterator<String> actualIterator = actual.iterator();
+        Iterator<String> expectedIterator = expected.iterator();
+        while (actualIterator.hasNext()) {
+            assertEquals(expectedIterator.next(), actualIterator.next());
+        }
+        assertEquals(expectedIterator.hasNext(), actualIterator.hasNext());
     }
 
     public static StringSet instance() {

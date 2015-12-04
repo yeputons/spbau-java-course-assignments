@@ -1,5 +1,8 @@
 package ru.spbau.mit;
 
+import java.util.Iterator;
+
+
 public interface StringSet {
     /**
      * Expected complexity: O(|element|)
@@ -7,7 +10,6 @@ public interface StringSet {
      *         element
      */
     boolean add(String element);
-
 
     /**
      * Expected complexity: O(|element|)
@@ -29,4 +31,10 @@ public interface StringSet {
      * Expected complexity: O(|prefix|)
      */
     int howManyStartsWithPrefix(String prefix);
+
+    /**
+     * Iterates over the words in a string set in lexicographical order
+     * Expected complexity: O(1)
+     */
+    Iterator<String> iterator();
 }
