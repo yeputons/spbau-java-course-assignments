@@ -34,6 +34,50 @@
 
 4. Покрыть написанный код тестами по максимум. Подробнее о том, как посмотреть coverage написано в README в ветке master. Создавать новые тесты можно на основе примера из первого задания.
 
+## Дополнительно для досдающих
+
+Реализовать следующие функции:
+
+- `Function1.uncurry` - **статическая** функция, обратная `Function2.curry`. Принимает объект `Function1` который возвращает `Function1` и делает из него `Function2`. Пример: 
+
+  ```java
+  Function1<?, ?> fn = { ... }; 
+  fn.apply(1).apply(2) == Function1.uncurry(fn).apply(1, 2);
+  ```
+  
+- `Function2.flip` - **метод** который меняет местами аргументы объекта `Function2`. Пример:
+  
+  ```java
+  Function2<A, B, C> fn = { ... };
+  fn.apply(42, "foo") == fn.flip().apply("foo", 42);
+  ```
+
+- `Collection.and` и `Collection.or` - статические функции, которые возвращают результат конъюнкции или дизъюнкции всех элементов в коллекции. Сделайте через уже реализованные функции в классе `Collection`. Пример работы:
+  
+  ```java
+  List<Boolean> trues = Arrays.asList(true, true, true);
+  List<Boolean> falses = Arrays.asList(false, false, false);
+  List<Boolean> mixed = Arrays.asList(false, true, false);
+  Collection.and(trues) == Collection.or(trues) == Collection.or(mixed) == true;
+  Collection.and(falses) == Collection.and(mixed) == Collection.or(falses) == false;
+  ```
+  
+- `Collection.concatMap` - статическая функция, которая принимает параметры `Function1<A, Iterable<A>> fn` и `Iterable<A> collection` и возвращает `Collection<A>`. Пример работы:
+
+  ```java
+  List<Long> longs = Arrays.asList(1, 2, 3, 4);
+  Function2<Long, List<Long>> duplicate = new Function2<>() { 
+    public List<Long> apply(Long n) {
+      return Arrays.asList(n, n);
+    }
+  };
+  Collection.concatMap(duplicate, longs) == Arrays.asList(1, 1, 2, 2, 3, 3, 4, 4);
+  ```
+
+- `Collection.iterate` - статическая функция, которая принимает `Function1<A, A> fn`, `A x` и `int n` и возвращает `Iterable<A>` вида: `[ x, fn(x), fn(fn(x)) ... ]` размера `n`.
+
+- `Collection.zipWith` - статическая функция, которая принимает `Function2<A, B, C> fn`, `Iterable<A> as`, `Iterable<B> bs` и возвращает коллекцию вида `[ fn(a[0], b[0]), fn(a[1], b[1]) ... fn(a[n], b[n]) ]`. Если коллекции неодинаковы по длине, то элементы более длинной отбрасываются и результирующая коллекция имеет длину равную длине меньшей входной коллекции.
+
 ## Общие требования
 
 - Сигнатуры классов и методов должны быть одновременно максимально гибкими (наиболее общими), и при этом не должны содержать лишних generic-параметров (т.е. по возможности следует использовать wildcard).
