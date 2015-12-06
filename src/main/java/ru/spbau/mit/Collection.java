@@ -181,4 +181,53 @@ public class Collection {
             }
         }, false, source);
     }
+
+    public static <T> Iterable<T> concatMap(final Function1<T, Iterable<T>> f, final Iterable<T> source) {
+        return new Iterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return new Iterator<T>() {
+                    private final Iterator<T> sourceIterator = source.iterator();
+                    private Iterator<T> currentIterator = null;
+
+                    @Override
+                    public boolean hasNext() {
+                        findNextIterator();
+                        return currentIterator != null;
+                    }
+
+                    @Override
+                    public T next() {
+                        findNextIterator();
+                        if (currentIterator == null) {
+                            throw new NoSuchElementException();
+                        }
+                        return currentIterator.next();
+                    }
+
+                    private void findNextIterator() {
+                        if (currentIterator != null && currentIterator.hasNext()) {
+                            return;
+                        }
+                        for (;;) {
+                            if (!sourceIterator.hasNext()) {
+                                currentIterator = null;
+                                return;
+                            }
+                            Iterator<T> it = f.apply(sourceIterator.next()).iterator();
+                            if (it.hasNext()) {
+                                currentIterator = it;
+                                return;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        };
+    }
 }

@@ -150,4 +150,23 @@ public class CollectionTest {
         assertFalse(Collection.and(falses));
         assertFalse(Collection.and(mixed));
     }
+
+    @Test
+    public void testConcatMap() {
+        final List<Integer[]> data = Arrays.asList(
+                new Integer[] { 1, 2, 3 },
+                new Integer[] { 4 },
+                new Integer[] { },
+                new Integer[] { 5, 6 }
+        );
+        Function1<Integer, Iterable<Integer>> f = new Function1<Integer, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> apply(Integer arg) {
+                return Arrays.asList(data.get(arg));
+            }
+        };
+
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6), toList(Collection.concatMap(f, Arrays.asList(0, 1, 2, 3))));
+        assertEquals(Arrays.asList(5, 6, 4), toList(Collection.concatMap(f, Arrays.asList(2, 3, 1))));
+    }
 }
