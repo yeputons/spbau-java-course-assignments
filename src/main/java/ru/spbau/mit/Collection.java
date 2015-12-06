@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class Collections {
+public class Collection {
     public static <T, S> Iterable<S> map(final Function1<? super T, S> f, final Iterable<T> source) {
         return new Iterable<S>() {
             @Override

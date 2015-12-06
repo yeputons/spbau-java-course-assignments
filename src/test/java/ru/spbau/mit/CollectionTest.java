@@ -1,7 +1,6 @@
 package ru.spbau.mit;
 
 import org.junit.Test;
-import ru.spbau.mit.testclasses.Funcs;
 import ru.spbau.mit.testclasses.Val;
 import ru.spbau.mit.testclasses.ValA;
 
@@ -9,13 +8,13 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-public class CollectionsTest {
+public class CollectionTest {
     @Test
     public void testMap() {
         List<ValA> source = Arrays.asList(new ValA(1), new ValA(2), new ValA(3));
         List<Val> expected = Arrays.asList(new Val(1), new Val(4), new Val(9));
 
-        Iterable<Val> res = Collections.map(new Function1<Val, Val>() {
+        Iterable<Val> res = Collection.map(new Function1<Val, Val>() {
             @Override
             public Val apply(Val arg) {
                 return new Val(arg.val * arg.val);
@@ -35,7 +34,7 @@ public class CollectionsTest {
         List<Integer> source = Arrays.asList(1, 2, 1, null, 1, 4);
         List<Integer> expected = Arrays.asList(1, 2, 1, 1, 4);
 
-        Iterable<Integer> res = Collections.filter(new Predicate<Number>() {
+        Iterable<Integer> res = Collection.filter(new Predicate<Number>() {
             @Override
             public Boolean apply(Number arg) {
                 return arg != null;
@@ -55,7 +54,7 @@ public class CollectionsTest {
         List<Integer> source = Arrays.asList(1, 2, 1, null, 1, 4);
         List<Integer> expected = Arrays.asList(1, 2, 1);
 
-        Iterable<Integer> res = Collections.takeWhile(new Predicate<Number>() {
+        Iterable<Integer> res = Collection.takeWhile(new Predicate<Number>() {
             @Override
             public Boolean apply(Number arg) {
                 return arg != null;
@@ -75,7 +74,7 @@ public class CollectionsTest {
         List<Integer> source = Arrays.asList(1, 2, 1, null, 1, 4);
         List<Integer> expected = Arrays.asList(1, 2, 1);
 
-        Iterable<Integer> res = Collections.takeUnless(new Predicate<Number>() {
+        Iterable<Integer> res = Collection.takeUnless(new Predicate<Number>() {
             @Override
             public Boolean apply(Number arg) {
                 return arg == null;
@@ -96,7 +95,7 @@ public class CollectionsTest {
         LinkedList<String> initial = new LinkedList<>();
         initial.add("init");
 
-        LinkedList<String> result = Collections.foldr(new Function2<Object, List<String>, LinkedList<String>>() {
+        LinkedList<String> result = Collection.foldr(new Function2<Object, List<String>, LinkedList<String>>() {
             @Override
             public LinkedList<String> apply(Object arg1, List<String> arg2) {
                 LinkedList<String> result = new LinkedList<String>();
@@ -122,7 +121,7 @@ public class CollectionsTest {
         LinkedList<String> initial = new LinkedList<>();
         initial.add("init");
 
-        LinkedList<String> result = Collections.foldl(new Function2<List<String>, Object, LinkedList<String>>() {
+        LinkedList<String> result = Collection.foldl(new Function2<List<String>, Object, LinkedList<String>>() {
             @Override
             public LinkedList<String> apply(List<String> arg1, Object arg2) {
                 LinkedList<String> result = new LinkedList<String>();
