@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Collections {
-    public static <T, S> Iterable<S> map(final Function1<? super T, ? extends S> f, final Iterable<T> source) {
+    public static <T, S> Iterable<S> map(final Function1<? super T, S> f, final Iterable<T> source) {
         return new Iterable<S>() {
             @Override
             public Iterator<S> iterator() {
