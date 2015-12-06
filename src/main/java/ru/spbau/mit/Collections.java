@@ -3,6 +3,7 @@ package ru.spbau.mit;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class Collections {
     public static <T, S> Iterable<S> map(final Function1<? super T, S> f, final Iterable<T> source) {
@@ -24,7 +25,7 @@ public class Collections {
 
                     @Override
                     public void remove() {
-                        it.remove();
+                        throw new UnsupportedOperationException();
                     }
                 };
             }
@@ -32,36 +33,105 @@ public class Collections {
     }
 
     public static <T> Iterable<T> filter(final Predicate<? super T> p, final Iterable<T> source) {
-        /**
-         * I was unable to come up with generator-like solution because of <code>remove</code>:
-         * - It forces me to use a single iterator from <code>source</code> only
-         * - It's possible to receive <code>hasNext</code> followed by <code>remove</code>.
-         *   I should forward the inner iterator during the first call (to find out next satisfying
-         *   element), but during the second call I should somehow 'return' it back to remove the
-         *   last element. I don't think it's possible.
-         */
-        List<T> result = new ArrayList<>();
-        for (T item : source) {
-            if (p.apply(item)) {
-                result.add(item);
+        return new Iterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return new Iterator<T>() {
+                    private final Iterator<T> it = source.iterator();
+                    private T value = null;
+                    private boolean hasValue = false;
+
+                    @Override
+                    public boolean hasNext() {
+                        findNext();
+                        return hasValue;
+                    }
+
+                    @Override
+                    public T next() {
+                        findNext();
+                        if (!hasValue) {
+                            throw new NoSuchElementException();
+                        }
+                        T result = value;
+                        value = null;
+                        hasValue = false;
+                        return result;
+                    }
+
+                    private void findNext() {
+                        if (hasValue) {
+                            return;
+                        }
+                        while (it.hasNext()) {
+                            T current = it.next();
+                            if (p.apply(current)) {
+                                value = current;
+                                hasValue = true;
+                                return;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
             }
-        }
-        return result;
+        };
     }
 
     public static <T> Iterable<T> takeWhile(final Predicate<? super T> p, final Iterable<T> source) {
-        /**
-         * Here we have the same problem as in <code>filter</code>: I cannot implement both
-         * <code>hasNext</code> and <code>remove</code> simultaneously
-         */
-        List<T> result = new ArrayList<>();
-        for (T item : source) {
-            if (!p.apply(item)) {
-                break;
+        return new Iterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return new Iterator<T>() {
+                    private Iterator<T> it = source.iterator();
+                    private T value = null;
+                    private boolean hasValue = false;
+
+                    @Override
+                    public boolean hasNext() {
+                        findNext();
+                        return hasValue;
+                    }
+
+                    @Override
+                    public T next() {
+                        findNext();
+                        if (!hasValue) {
+                            throw new NoSuchElementException();
+                        }
+                        T result = value;
+                        value = null;
+                        hasValue = false;
+                        return result;
+                    }
+
+                    private void findNext() {
+                        if (hasValue) {
+                            return;
+                        }
+                        if (it == null || !it.hasNext()) {
+                            return;
+                        }
+                        T current = it.next();
+                        if (p.apply(current)) {
+                            value = current;
+                            hasValue = true;
+                        } else {
+                            it = null;
+                        }
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
             }
-            result.add(item);
-        }
-        return result;
+        };
     }
 
     public static <T> Iterable<T> takeUnless(final Predicate<? super T> p, final Iterable<T> source) {
