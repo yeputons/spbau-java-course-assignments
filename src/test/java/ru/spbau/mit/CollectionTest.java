@@ -53,18 +53,22 @@ public class CollectionTest {
 
     @Test
     public void testTakeWhile() {
-        List<Integer> source = Arrays.asList(1, 2, 1, null, 1, 4);
-        List<Integer> expected = Arrays.asList(1, 2, 1);
+        List<Integer> source1 = Arrays.asList(1, 2, 1, null, 1, 4);
+        List<Integer> expected1 = Arrays.asList(1, 2, 1);
+        List<Integer> source2 = Arrays.asList(1, 2, 2);
 
-        Iterable<Integer> res = Collection.takeWhile(new Predicate<Number>() {
+        Predicate<Number> notNull = new Predicate<Number>() {
             @Override
             public Boolean apply(Number arg) {
                 return arg != null;
             }
-        }, source);
+        };
+
+        Iterable<Integer> res1 = Collection.takeWhile(notNull, source1);
         for (int step = 0; step < 2; step++) {
-            assertEquals(expected, toList(res));
+            assertEquals(expected1, toList(res1));
         }
+        assertEquals(source2, toList(Collection.takeWhile(notNull, source2)));
     }
 
     @Test
