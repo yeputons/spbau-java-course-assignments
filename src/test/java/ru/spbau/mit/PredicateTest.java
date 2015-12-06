@@ -61,6 +61,22 @@ public class PredicateTest {
     }
 
     @Test
+    public void testOrInheritance() {
+        PredicateValEquals<Val> equals2 = new PredicateValEquals<>(2);
+        PredicateValEquals<ValA> equals5 = new PredicateValEquals<>(5);
+
+        Predicate<ValA> equalsA = equals2.or(equals5);
+        assertTrue(equalsA.apply(new ValA(2)));
+        assertTrue(equalsA.apply(new ValA(5)));
+        assertFalse(equalsA.apply(new ValA(3)));
+
+        Predicate<ValA> equalsB = equals5.or(equals2);
+        assertTrue(equalsB.apply(new ValA(2)));
+        assertTrue(equalsB.apply(new ValA(5)));
+        assertFalse(equalsB.apply(new ValA(3)));
+    }
+
+    @Test
     public void testAndLazy() {
         PredicateValGreaterOrEquals<ValA> ge2 = new PredicateValGreaterOrEquals<>(2);
         PredicateValLessOrEquals<ValA> le4 = new PredicateValLessOrEquals<>(4);
@@ -88,5 +104,21 @@ public class PredicateTest {
         assertFalse(between2And4.apply(new ValA(5)));
         assertEquals(5, ge2.getTimesCalled());
         assertEquals(4, le4.getTimesCalled());
+    }
+
+    @Test
+    public void testAndInheritance() {
+        PredicateValGreaterOrEquals<ValA> ge2 = new PredicateValGreaterOrEquals<>(2);
+        PredicateValLessOrEquals<Val> le4 = new PredicateValLessOrEquals<>(4);
+
+        Predicate<ValA> cmpA = ge2.and(le4);
+        assertTrue(cmpA.apply(new ValA(3)));
+        assertFalse(cmpA.apply(new ValA(1)));
+        assertFalse(cmpA.apply(new ValA(5)));
+
+        Predicate<ValA> cmpB = le4.and(ge2);
+        assertTrue(cmpB.apply(new ValA(3)));
+        assertFalse(cmpB.apply(new ValA(1)));
+        assertFalse(cmpB.apply(new ValA(5)));
     }
 }
