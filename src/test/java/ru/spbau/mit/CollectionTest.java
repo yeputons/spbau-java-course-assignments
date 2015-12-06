@@ -1,10 +1,7 @@
 package ru.spbau.mit;
 
 import org.junit.Test;
-import ru.spbau.mit.testclasses.Val;
-import ru.spbau.mit.testclasses.ValA;
-import ru.spbau.mit.testclasses.ValB;
-import ru.spbau.mit.testclasses.ValC;
+import ru.spbau.mit.testclasses.*;
 
 import java.util.*;
 
@@ -43,6 +40,13 @@ public class CollectionTest {
         }
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMapUnsupportedRemove() {
+        Iterator<Val> it = Collection.map(Funcs.inc, Arrays.asList(new Val(1))).iterator();
+        it.next();
+        it.remove();
+    }
+
     @Test
     public void testFilter() {
         List<Integer> source = Arrays.asList(1, 2, 1, null, 1, 4);
@@ -57,6 +61,13 @@ public class CollectionTest {
         for (int step = 0; step < 2; step++) {
             assertEquals(expected, toList(res));
         }
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testFilterUnsupportedRemove() {
+        Iterator<Val> it = Collection.filter(Predicate.ALWAYS_TRUE, Arrays.asList(new Val(1))).iterator();
+        it.next();
+        it.remove();
     }
 
     @Test
@@ -77,6 +88,13 @@ public class CollectionTest {
             assertEquals(expected1, toList(res1));
         }
         assertEquals(source2, toList(Collection.takeWhile(notNull, source2)));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testTakeWhileUnsupportedRemove() {
+        Iterator<Val> it = Collection.takeWhile(Predicate.ALWAYS_TRUE, Arrays.asList(new Val(1))).iterator();
+        it.next();
+        it.remove();
     }
 
     @Test
@@ -184,6 +202,18 @@ public class CollectionTest {
         assertEquals(Arrays.asList(5, 6, 4), toList(Collection.concatMap(f, Arrays.asList(2, 3, 1))));
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void testConcatMapUnsupportedRemove() {
+        Iterator<Object> it = Collection.concatMap(new Function1<Object, Iterable<Object>>() {
+            @Override
+            public Iterable<Object> apply(Object arg) {
+                return Arrays.asList(arg);
+            }
+        }, Arrays.asList((Object)null)).iterator();
+        it.next();
+        it.remove();
+    }
+
     private static class IteratingFunction extends Function1<Integer, Integer> {
         private int nextCall = 0;
 
@@ -212,6 +242,13 @@ public class CollectionTest {
         assertEquals(4, f.getNextCall());
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void testIterateUnsupportedRemove() {
+        Iterator<Val> it = Collection.iterate(Funcs.inc, new Val(10), 1).iterator();
+        it.next();
+        it.remove();
+    }
+
     @Test
     public void testZipWith() {
         List<ValA> as = Arrays.asList(new ValA(1), new ValA(2), new ValA(3));
@@ -233,5 +270,17 @@ public class CollectionTest {
             }
         };
         assertEquals(expected, toList(Collection.zipWith(fbac, bs, as)));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testZipWithUnsupportedRemove() {
+        Iterator<Object> it = Collection.zipWith(new Function2<Object, Object, Object>() {
+            @Override
+            public Object apply(Object arg1, Object arg2) {
+                return null;
+            }
+        }, Arrays.asList((Object)null), Arrays.asList((Object)null)).iterator();
+        it.next();
+        it.remove();
     }
 }
