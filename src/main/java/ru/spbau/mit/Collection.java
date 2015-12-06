@@ -257,7 +257,7 @@ public class Collection {
 
                     @Override
                     public void remove() {
-                        throw new IllegalArgumentException();
+                        throw new UnsupportedOperationException();
                     }
                 };
             }
