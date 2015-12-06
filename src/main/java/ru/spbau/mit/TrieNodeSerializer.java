@@ -10,11 +10,11 @@ import java.io.OutputStream;
  * serialization of <code>null</code> nodes is significantly
  * easier and can be performed in a single place of code.
  */
-public class TrieNodeSerializer {
+class TrieNodeSerializer {
     // These constants are "header" of every node
-    protected final static byte NO_NODE = 0;
-    protected final static byte NODE_NO_END = 1;
-    protected final static byte NODE_WITH_END = 2;
+    private final static byte NO_NODE = 0;
+    private final static byte NODE_NO_END = 1;
+    private final static byte NODE_WITH_END = 2;
 
     /**
      * Serializes <code>node</code> to <code>out</code>
@@ -22,7 +22,7 @@ public class TrieNodeSerializer {
      * @param out Stream to serialize into
      * @throws IOException
      */
-    static void serialize(TrieNode node, OutputStream out) throws IOException {
+    static public void serialize(TrieNode node, OutputStream out) throws IOException {
         if (node == null) {
             out.write(new byte[] { NO_NODE });
             return;
@@ -42,7 +42,7 @@ public class TrieNodeSerializer {
      * @return Newly constructed <code>TrieNode</code> which was read from <code>in</code>
      * @throws IOException
      */
-    static TrieNode deserialize(InputStream in) throws IOException {
+    static public TrieNode deserialize(InputStream in) throws IOException {
         int type = in.read();
         if (type == -1) {
             throw new SerializationException();

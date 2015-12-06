@@ -20,8 +20,8 @@ class TrieNode {
      * Internal conversion between chars and a small range of integers.
      * It exploits the fact that we have Latin letters only.
      */
-    static protected final int ALPHABET_SIZE = 52;
-    static protected int getCharacterCode(char c) {
+    static final int ALPHABET_SIZE = 52;
+    static int getCharacterCode(char c) {
         if ('a' <= c && c <= 'z') {
             return c - 'a';
         }
@@ -31,9 +31,9 @@ class TrieNode {
         throw new IllegalArgumentException("Character is expected to be Latin letter");
     }
 
-    protected TrieNode[] children;
-    boolean isElementEnd;
-    int elementsInSubtree;
+    public TrieNode[] children;
+    public boolean isElementEnd;
+    public int elementsInSubtree;
 
     /**
      * Creates empty node with no children and no substrings marked as present.
