@@ -169,4 +169,32 @@ public class CollectionTest {
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6), toList(Collection.concatMap(f, Arrays.asList(0, 1, 2, 3))));
         assertEquals(Arrays.asList(5, 6, 4), toList(Collection.concatMap(f, Arrays.asList(2, 3, 1))));
     }
+
+    private static class IteratingFunction extends Function1<Integer, Integer> {
+        private int nextCall = 0;
+
+        public int getNextCall() {
+            return nextCall;
+        }
+
+        @Override
+        public Integer apply(Integer arg) {
+            assertEquals(nextCall, (int) arg);
+            nextCall++;
+            return nextCall;
+        }
+    };
+
+    @Test
+    public void testIterate() {
+        IteratingFunction f = new IteratingFunction();
+        Iterator<Integer> it = Collection.iterate(f, 0, 5).iterator();
+        for (int i = 0; i < 5; i++) {
+            assertTrue(it.hasNext());
+            assertEquals(Math.max(0, i - 1), f.getNextCall());
+            assertEquals(i, (int) it.next());
+        }
+        assertFalse(it.hasNext());
+        assertEquals(4, f.getNextCall());
+    }
 }

@@ -230,4 +230,37 @@ public class Collection {
             }
         };
     }
+
+    public static <T> Iterable<T> iterate(final Function1<T, T> f, final T initial, final int n) {
+        return new Iterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return new Iterator<T>() {
+                    private T current = initial;
+                    private int remaining = n;
+                    private boolean first = true;
+
+                    @Override
+                    public boolean hasNext() {
+                        return remaining > 0;
+                    }
+
+                    @Override
+                    public T next() {
+                        remaining--;
+                        if (!first) {
+                            current = f.apply(current);
+                        }
+                        first = false;
+                        return current;
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new IllegalArgumentException();
+                    }
+                };
+            }
+        };
+    }
 }
