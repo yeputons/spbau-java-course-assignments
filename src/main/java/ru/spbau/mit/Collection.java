@@ -280,7 +280,7 @@ public class Collection {
                     @Override
                     public C next() {
                         if (!hasNext()) {
-                            throw new UnsupportedOperationException();
+                            throw new NoSuchElementException();
                         }
                         return f.apply(itA.next(), itB.next());
                     }
