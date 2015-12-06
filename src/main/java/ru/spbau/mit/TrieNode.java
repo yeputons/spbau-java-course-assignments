@@ -30,6 +30,15 @@ class TrieNode {
         }
         throw new IllegalArgumentException("Character is expected to be Latin letter");
     }
+    public static char getCharacterFromCode(int code) {
+        if (0 <= code && code < 26) {
+            return (char) ('a' + code);
+        }
+        if (26 <= code && code < 52) {
+            return (char) ('Ф' + code - 26);
+        }
+        throw new IllegalArgumentException("Code is expected to be from 0 to 51");
+    }
 
     public TrieNode[] children;
     public boolean isElementEnd;
