@@ -11,10 +11,18 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class CollectionTest {
-    private <T> List<T> toList(Iterable<T> it) {
+    private <T> List<T> toList(Iterable<T> collection) {
         List<T> result = new ArrayList<>();
-        for (T x : it) {
-            result.add(x);
+        Iterator<T> it = collection.iterator();
+        while (it.hasNext()) {
+            result.add(it.next());
+        }
+
+        try {
+            it.next();
+            assertTrue("next() should throw NoSuchElementException on depleted iterator", false);
+        } catch (NoSuchElementException e) {
+            // expected
         }
         return result;
     }
