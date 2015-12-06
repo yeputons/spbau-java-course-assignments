@@ -11,4 +11,13 @@ public abstract class Function1<T, Res> {
             }
         };
     }
+
+    public static <T1, T2, Res> Function2<T1, T2, Res> uncurry(final Function1<T1, Function1<T2, Res>> f) {
+        return new Function2<T1, T2, Res>() {
+            @Override
+            public Res apply(T1 arg1, T2 arg2) {
+                return f.apply(arg1).apply(arg2);
+            }
+        };
+    }
 }

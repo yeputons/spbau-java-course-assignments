@@ -24,4 +24,21 @@ public class Function1Test {
         Function1<ValA, Val> f = a2b.compose(inc);
         assertEquals(new Val(11), f.apply(new ValA(10)));
     }
+
+    @Test
+    public void testUncurry() {
+        Function1<ValA, Function1<ValB, ValC> > f = new Function1<ValA, Function1<ValB, ValC>>() {
+            @Override
+            public Function1<ValB, ValC> apply(final ValA arg1) {
+                return new Function1<ValB, ValC>() {
+                    @Override
+                    public ValC apply(ValB arg2) {
+                        return new ValC(arg1.val + arg2.val * 3);
+                    }
+                };
+            }
+        };
+        Function2<ValA, ValB, ValC> f2 = Function1.uncurry(f);
+        assertEquals(new ValC(45), f2.apply(new ValA(12), new ValB(11)));
+    }
 }
