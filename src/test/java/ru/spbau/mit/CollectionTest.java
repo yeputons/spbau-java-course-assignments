@@ -140,4 +140,22 @@ public class CollectionTest {
                 "init"
         }, result.toArray());
     }
+
+    private final List<Boolean> trues = Arrays.asList(true, true, true);
+    private final List<Boolean> falses = Arrays.asList(false, false, false);
+    private final List<Boolean> mixed = Arrays.asList(false, true, false);
+
+    @Test
+    public void testOr() {
+        assertTrue(Collection.or(trues));
+        assertFalse(Collection.or(falses));
+        assertTrue(Collection.or(mixed));
+    }
+
+    @Test
+    public void testAnd() {
+        assertTrue(Collection.and(trues));
+        assertFalse(Collection.and(falses));
+        assertFalse(Collection.and(mixed));
+    }
 }

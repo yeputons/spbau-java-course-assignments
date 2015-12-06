@@ -163,4 +163,22 @@ public class Collection {
         }
         return result;
     }
+
+    public static boolean and(final Iterable<Boolean> source) {
+        return foldl(new Function2<Boolean, Boolean, Boolean>() {
+            @Override
+            public Boolean apply(Boolean arg1, Boolean arg2) {
+                return arg1 && arg2;
+            }
+        }, true, source);
+    }
+
+    public static boolean or(final Iterable<Boolean> source) {
+        return foldl(new Function2<Boolean, Boolean, Boolean>() {
+            @Override
+            public Boolean apply(Boolean arg1, Boolean arg2) {
+                return arg1 || arg2;
+            }
+        }, false, source);
+    }
 }
