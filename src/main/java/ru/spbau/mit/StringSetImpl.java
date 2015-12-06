@@ -3,6 +3,7 @@ package ru.spbau.mit;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Iterator;
 
 public class StringSetImpl implements StringSet, StreamSerializable {
     private TrieNode root = new TrieNode();
@@ -106,6 +107,11 @@ public class StringSetImpl implements StringSet, StreamSerializable {
                 return childResult;
             }
         });
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return new TrieNodeIterator(root);
     }
 
     @Override
