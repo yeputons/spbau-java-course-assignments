@@ -9,6 +9,14 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class CollectionTest {
+    private <T> List<T> toList(Iterable<T> it) {
+        List<T> result = new ArrayList<>();
+        for (T x : it) {
+            result.add(x);
+        }
+        return result;
+    }
+
     @Test
     public void testMap() {
         List<ValA> source = Arrays.asList(new ValA(1), new ValA(2), new ValA(3));
@@ -21,11 +29,7 @@ public class CollectionTest {
             }
         }, source);
         for (int step = 0; step < 2; step++) {
-            List<Val> got = new LinkedList<>();
-            for (Val x : res) {
-                got.add(x);
-            }
-            assertEquals(expected, got);
+            assertEquals(expected, toList(res));
         }
     }
 
@@ -41,11 +45,7 @@ public class CollectionTest {
             }
         }, source);
         for (int step = 0; step < 2; step++) {
-            List<Integer> got = new LinkedList<>();
-            for (Integer x : res) {
-                got.add(x);
-            }
-            assertEquals(expected, got);
+            assertEquals(expected, toList(res));
         }
     }
 
@@ -61,11 +61,7 @@ public class CollectionTest {
             }
         }, source);
         for (int step = 0; step < 2; step++) {
-            List<Integer> got = new LinkedList<>();
-            for (Integer x : res) {
-                got.add(x);
-            }
-            assertEquals(expected, got);
+            assertEquals(expected, toList(res));
         }
     }
 
@@ -81,11 +77,7 @@ public class CollectionTest {
             }
         }, source);
         for (int step = 0; step < 2; step++) {
-            List<Integer> got = new LinkedList<>();
-            for (Integer x : res) {
-                got.add(x);
-            }
-            assertEquals(expected, got);
+            assertEquals(expected, toList(res));
         }
     }
 
