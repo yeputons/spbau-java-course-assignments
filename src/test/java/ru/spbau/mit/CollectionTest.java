@@ -3,6 +3,8 @@ package ru.spbau.mit;
 import org.junit.Test;
 import ru.spbau.mit.testclasses.Val;
 import ru.spbau.mit.testclasses.ValA;
+import ru.spbau.mit.testclasses.ValB;
+import ru.spbau.mit.testclasses.ValC;
 
 import java.util.*;
 
@@ -196,5 +198,28 @@ public class CollectionTest {
         }
         assertFalse(it.hasNext());
         assertEquals(4, f.getNextCall());
+    }
+
+    @Test
+    public void testZipWith() {
+        List<ValA> as = Arrays.asList(new ValA(1), new ValA(2), new ValA(3));
+        List<ValB> bs = Arrays.asList(new ValB(4), new ValB(5), new ValB(6), new ValB(7));
+        List<ValC> expected = Arrays.asList(new ValC(4), new ValC(10), new ValC(18));
+
+        Function2<ValA, ValB, ValC> fabc = new Function2<ValA, ValB, ValC>() {
+            @Override
+            public ValC apply(ValA arg1, ValB arg2) {
+                return new ValC(arg1.val * arg2.val);
+            }
+        };
+        assertEquals(expected, toList(Collection.zipWith(fabc, as, bs)));
+
+        Function2<ValB, ValA, ValC> fbac = new Function2<ValB, ValA, ValC>() {
+            @Override
+            public ValC apply(ValB arg1, ValA arg2) {
+                return new ValC(arg1.val * arg2.val);
+            }
+        };
+        assertEquals(expected, toList(Collection.zipWith(fbac, bs, as)));
     }
 }

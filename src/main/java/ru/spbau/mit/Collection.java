@@ -263,4 +263,34 @@ public class Collection {
             }
         };
     }
+
+    public static <A, B, C> Iterable<C> zipWith(final Function2<A, B, C> f, final Iterable<A> as, final Iterable<B> bs) {
+        return new Iterable<C>() {
+            @Override
+            public Iterator<C> iterator() {
+                return new Iterator<C>() {
+                    private final Iterator<A> itA = as.iterator();
+                    private final Iterator<B> itB = bs.iterator();
+
+                    @Override
+                    public boolean hasNext() {
+                        return itA.hasNext() && itB.hasNext();
+                    }
+
+                    @Override
+                    public C next() {
+                        if (!hasNext()) {
+                            throw new UnsupportedOperationException();
+                        }
+                        return f.apply(itA.next(), itB.next());
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        };
+    }
 }
