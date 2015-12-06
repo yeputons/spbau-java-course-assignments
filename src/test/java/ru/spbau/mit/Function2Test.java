@@ -42,4 +42,10 @@ public class Function2Test {
         assertEquals(new ValC(45), f12.apply(new ValB(11)));
         assertEquals(new ValC(46), f13.apply(new ValB(11)));
     }
+
+    @Test
+    public void testFlip() {
+        Function2<ValB, ValA, ValC> f = aPlusBTimes3.flip();
+        assertEquals(new ValC(45), f.apply(new ValB(11), new ValA(12)));
+    }
 }

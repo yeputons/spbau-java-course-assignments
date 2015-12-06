@@ -38,4 +38,13 @@ public abstract class Function2<T1, T2, Res> {
             }
         };
     }
+
+    public Function2<T2, T1, Res> flip() {
+        return new Function2<T2, T1, Res>() {
+            @Override
+            public Res apply(T2 arg2, T1 arg1) {
+                return Function2.this.apply(arg1, arg2);
+            }
+        };
+    }
 }
