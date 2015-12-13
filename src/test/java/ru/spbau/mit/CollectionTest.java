@@ -272,6 +272,21 @@ public class CollectionTest {
         assertEquals(expected, toList(Collection.zipWith(fbac, bs, as)));
     }
 
+    @Test
+    public void testZipWithSuperTypes() {
+        List<ValA> as = Arrays.asList(new ValA(1), new ValA(2), new ValA(3));
+        List<ValB> bs = Arrays.asList(new ValB(4), new ValB(5), new ValB(6), new ValB(7));
+        List<ValC> expected = Arrays.asList(new ValC(4), new ValC(10), new ValC(18));
+
+        Function2<Val, Val, ValC> fabc = new Function2<Val, Val, ValC>() {
+            @Override
+            public ValC apply(Val arg1, Val arg2) {
+                return new ValC(arg1.val * arg2.val);
+            }
+        };
+        assertEquals(expected, toList(Collection.zipWith(fabc, as, bs)));
+    }
+
     @Test(expected = UnsupportedOperationException.class)
     public void testZipWithUnsupportedRemove() {
         Iterator<Object> it = Collection.zipWith(new Function2<Object, Object, Object>() {

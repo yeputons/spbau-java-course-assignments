@@ -234,7 +234,7 @@ public class Collection {
         };
     }
 
-    public static <A, B, C> Iterable<C> zipWith(final Function2<A, B, C> f, final Iterable<A> as, final Iterable<B> bs) {
+    public static <A, B, C> Iterable<C> zipWith(final Function2<? super A, ? super B, C> f, final Iterable<A> as, final Iterable<B> bs) {
         return new Iterable<C>() {
             @Override
             public Iterator<C> iterator() {
