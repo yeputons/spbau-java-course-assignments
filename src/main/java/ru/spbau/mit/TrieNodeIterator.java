@@ -38,7 +38,7 @@ public class TrieNodeIterator implements Iterator<String> {
         // Invariant: currentPath and currentString have same length,
         // we've already visited all subtrees of currentPath.peek()'s children
         // before and including currentString.peek().
-        currentString.add(-1);
+        currentString.push(-1);
         while (true) {
             if (currentString.empty()) {
                 throw new NoSuchElementException();
@@ -54,7 +54,7 @@ public class TrieNodeIterator implements Iterator<String> {
                     if (currentPath.peek().isElementEnd) {
                         return;
                     }
-                    currentString.add(-1);
+                    currentString.push(-1);
                     break;
                 }
             }
