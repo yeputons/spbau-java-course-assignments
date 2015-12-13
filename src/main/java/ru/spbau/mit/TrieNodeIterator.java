@@ -2,9 +2,10 @@ package ru.spbau.mit;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Stack;
 
 public class TrieNodeIterator implements Iterator<String> {
     /**
@@ -14,8 +15,8 @@ public class TrieNodeIterator implements Iterator<String> {
      *
      * If iterator is depleted <code>currentPath</code> is empty
      */
-    private Stack<TrieNode> currentPath = new Stack<>();
-    private Stack<Integer> currentString = new Stack<>();
+    private Deque<TrieNode> currentPath = new ArrayDeque<>();
+    private Deque<Integer> currentString = new ArrayDeque<>();
     private boolean visitedCurrent;
 
     public TrieNodeIterator(TrieNode root) {
@@ -27,7 +28,7 @@ public class TrieNodeIterator implements Iterator<String> {
      * Iterates to next non-visited end node in a trie
      */
     private void findNextString() {
-        if (currentPath.empty()) {
+        if (currentPath.size() == 0) {
             throw new NoSuchElementException();
         }
         if (!visitedCurrent && currentPath.peek().isElementEnd) {
@@ -40,7 +41,7 @@ public class TrieNodeIterator implements Iterator<String> {
         // before and including currentString.peek().
         currentString.push(-1);
         while (true) {
-            if (currentString.empty()) {
+            if (currentString.size() == 0) {
                 throw new NoSuchElementException();
             }
 
@@ -84,6 +85,7 @@ public class TrieNodeIterator implements Iterator<String> {
         for (int code : currentString) {
             result.append(TrieNode.getCharacterFromCode(code));
         }
+        result = result.reverse(); // push and pop work with head of Deque<>
         visitedCurrent = true;
         return result.toString();
     }
