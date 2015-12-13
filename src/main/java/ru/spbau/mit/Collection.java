@@ -32,106 +32,76 @@ public class Collection {
         };
     }
 
-    public static <T> Iterable<T> filter(final Predicate<? super T> p, final Iterable<T> source) {
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return new Iterator<T>() {
-                    private final Iterator<T> it = source.iterator();
-                    private T value = null;
-                    private boolean hasValue = false;
+    private static class FilteringIterable<T> implements Iterable<T> {
+        private final Iterable<T> source;
+        private final Predicate<? super T> p;
+        private final boolean stopOnFirstMismatch;
 
-                    @Override
-                    public boolean hasNext() {
-                        findNext();
-                        return hasValue;
+        public FilteringIterable(Iterable<T> source, Predicate<? super T> p, boolean stopOnFirstMismatch) {
+            this.source = source;
+            this.p = p;
+            this.stopOnFirstMismatch = stopOnFirstMismatch;
+        }
+
+        @Override
+        public Iterator<T> iterator() {
+            return new Iterator<T>() {
+                private Iterator<T> it = source.iterator();
+                private T value = null;
+                private boolean hasValue = false;
+
+                @Override
+                public boolean hasNext() {
+                    findNext();
+                    return hasValue;
+                }
+
+                @Override
+                public T next() {
+                    findNext();
+                    if (!hasValue) {
+                        throw new NoSuchElementException();
                     }
+                    T result = value;
+                    value = null;
+                    hasValue = false;
+                    return result;
+                }
 
-                    @Override
-                    public T next() {
-                        findNext();
-                        if (!hasValue) {
-                            throw new NoSuchElementException();
-                        }
-                        T result = value;
-                        value = null;
-                        hasValue = false;
-                        return result;
+                private void findNext() {
+                    if (hasValue) {
+                        return;
                     }
-
-                    private void findNext() {
-                        if (hasValue) {
-                            return;
-                        }
-                        while (it.hasNext()) {
-                            T current = it.next();
-                            if (p.apply(current)) {
-                                value = current;
-                                hasValue = true;
-                                return;
-                            }
-                        }
+                    if (it == null) {
+                        return;
                     }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
-            }
-        };
-    }
-
-    public static <T> Iterable<T> takeWhile(final Predicate<? super T> p, final Iterable<T> source) {
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return new Iterator<T>() {
-                    private Iterator<T> it = source.iterator();
-                    private T value = null;
-                    private boolean hasValue = false;
-
-                    @Override
-                    public boolean hasNext() {
-                        findNext();
-                        return hasValue;
-                    }
-
-                    @Override
-                    public T next() {
-                        findNext();
-                        if (!hasValue) {
-                            throw new NoSuchElementException();
-                        }
-                        T result = value;
-                        value = null;
-                        hasValue = false;
-                        return result;
-                    }
-
-                    private void findNext() {
-                        if (hasValue) {
-                            return;
-                        }
-                        if (it == null || !it.hasNext()) {
-                            return;
-                        }
+                    while (it.hasNext()) {
                         T current = it.next();
                         if (p.apply(current)) {
                             value = current;
                             hasValue = true;
-                        } else {
+                            return;
+                        } else if (stopOnFirstMismatch) {
                             it = null;
+                            return;
                         }
                     }
+                }
 
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
-            }
-        };
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
+    }
+
+    public static <T> Iterable<T> filter(final Predicate<? super T> p, final Iterable<T> source) {
+        return new FilteringIterable<>(source, p, /* stopOnFirstMismatch */ false);
+    }
+
+    public static <T> Iterable<T> takeWhile(final Predicate<? super T> p, final Iterable<T> source) {
+        return new FilteringIterable<>(source, p, /* stopOnFirstMismatch */ true);
     }
 
     public static <T> Iterable<T> takeUnless(final Predicate<? super T> p, final Iterable<T> source) {
