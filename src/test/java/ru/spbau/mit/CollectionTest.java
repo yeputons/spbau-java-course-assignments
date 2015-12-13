@@ -6,6 +6,7 @@ import ru.spbau.mit.testclasses.*;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static ru.spbau.mit.testclasses.Val.*;
 
 public class CollectionTest {
     private <T> List<T> toList(Iterable<T> collection) {

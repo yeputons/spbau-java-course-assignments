@@ -2,6 +2,7 @@ package ru.spbau.mit;
 
 import org.junit.Test;
 import ru.spbau.mit.testclasses.*;
+import static ru.spbau.mit.testclasses.Val.*;
 
 import static org.junit.Assert.*;
 

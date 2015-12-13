@@ -2,6 +2,7 @@ package ru.spbau.mit.testclasses;
 
 import ru.spbau.mit.Function1;
 
+
 public class Funcs {
     public static final Function1<Val, Val> inc = new Function1<Val, Val>() {
         @Override
@@ -17,17 +18,17 @@ public class Funcs {
         }
     };
 
-    public static final Function1<ValA, ValB> a2b = new Function1<ValA, ValB>() {
+    public static final Function1<Val.ValA, Val.ValB> a2b = new Function1<Val.ValA, Val.ValB>() {
         @Override
-        public ValB apply(ValA arg) {
-            return new ValB(arg.val);
+        public Val.ValB apply(Val.ValA arg) {
+            return new Val.ValB(arg.val);
         }
     };
 
-    public static final Function1<ValB, ValC> b2c = new Function1<ValB, ValC>() {
+    public static final Function1<Val.ValB, Val.ValC> b2c = new Function1<Val.ValB, Val.ValC>() {
         @Override
-        public ValC apply(ValB arg) {
-            return new ValC(arg.val);
+        public Val.ValC apply(Val.ValB arg) {
+            return new Val.ValC(arg.val);
         }
     };
 }

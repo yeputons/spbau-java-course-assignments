@@ -31,4 +31,22 @@ public class Val {
         Val other = (Val) obj;
         return val == other.val;
     }
+
+    public static class ValA extends Val {
+        public ValA(int val) {
+            super(val);
+        }
+    }
+
+    public static class ValB extends Val {
+        public ValB(int val) {
+            super(val);
+        }
+    }
+
+    public static class ValC extends Val {
+        public ValC(int val) {
+            super(val);
+        }
+    }
 }
