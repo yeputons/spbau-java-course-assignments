@@ -7,7 +7,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class TrieNodeIterator implements Iterator<String> {
+class TrieNodeIterator implements Iterator<String> {
     /**
      * State of the iterator: some node in a trie (stored together with a traversed path).
      * If length of corresponding string is L, then <code>currentString</code> has L elements and
