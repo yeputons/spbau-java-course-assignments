@@ -114,9 +114,8 @@ public class Collection {
          * anyway before we will be able to make a single call of <code>f</code>
          */
         List<T> data = new ArrayList<>();
-        Iterator<T> it = source.iterator();
-        while (it.hasNext()) {
-            data.add(it.next());
+        for (T item : source) {
+            data.add(item);
         }
         Res result = initial;
         for (int i = data.size() - 1; i >= 0; i--) {
